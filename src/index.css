@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+/* Dental Clinic Dashboard Design System - Purple Theme */
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 260 10% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 260 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 10% 15%;
+
+    --primary: 280 80% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 280 60% 95%;
+    --secondary-foreground: 280 80% 30%;
+
+    --muted: 260 10% 94%;
+    --muted-foreground: 260 10% 45%;
+
+    --accent: 280 70% 92%;
+    --accent-foreground: 280 80% 30%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 260 15% 90%;
+    --input: 260 15% 90%;
+    --ring: 280 80% 45%;
+
+    --radius: 0.5rem;
+
+    /* Custom purple palette */
+    --purple-50: 280 80% 97%;
+    --purple-100: 280 75% 94%;
+    --purple-200: 280 70% 88%;
+    --purple-300: 280 65% 78%;
+    --purple-400: 280 70% 60%;
+    --purple-500: 280 80% 45%;
+    --purple-600: 280 80% 35%;
+    --purple-700: 280 85% 28%;
+    --purple-800: 280 85% 22%;
+    --purple-900: 280 90% 15%;
+
+    /* Chart colors */
+    --chart-1: 280 80% 45%;
+    --chart-2: 280 60% 60%;
+    --chart-3: 320 70% 55%;
+    --chart-4: 260 70% 50%;
+    --chart-5: 300 60% 65%;
+
+    /* Sidebar */
+    --sidebar-background: 280 85% 22%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 280 80% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 70% 30%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 280 60% 28%;
+    --sidebar-ring: 280 80% 55%;
+
+    /* Success/Warning colors */
+    --success: 145 65% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Gradient */
+    --gradient-primary: linear-gradient(135deg, hsl(280 80% 45%) 0%, hsl(320 70% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(280 80% 97%) 0%, hsl(0 0% 100%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(280 30% 20% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(280 30% 20% / 0.08), 0 2px 4px -1px hsl(280 30% 20% / 0.04);
+    --shadow-lg: 0 10px 15px -3px hsl(280 30% 20% / 0.1), 0 4px 6px -2px hsl(280 30% 20% / 0.05);
+    --shadow-purple: 0 4px 14px 0 hsl(280 80% 45% / 0.25);
+  }
+
+  .dark {
+    --background: 280 20% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 280 20% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 280 20% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 280 70% 60%;
+    --primary-foreground: 280 90% 10%;
+
+    --secondary: 280 30% 20%;
+    --secondary-foreground: 280 60% 85%;
+
+    --muted: 280 20% 18%;
+    --muted-foreground: 280 15% 60%;
+
+    --accent: 280 40% 22%;
+    --accent-foreground: 280 60% 85%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 280 25% 22%;
+    --input: 280 25% 22%;
+    --ring: 280 70% 55%;
+
+    --sidebar-background: 280 30% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 280 70% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 40% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 280 30% 18%;
+    --sidebar-ring: 280 70% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Roboto', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .shadow-card {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-purple {
+    box-shadow: var(--shadow-purple);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  .animate-pulse-purple {
+    animation: pulse-purple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-purple {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
