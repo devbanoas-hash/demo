@@ -84,6 +84,9 @@
     --shadow-md: 0 4px 6px -1px hsl(280 30% 20% / 0.08), 0 2px 4px -1px hsl(280 30% 20% / 0.04);
     --shadow-lg: 0 10px 15px -3px hsl(280 30% 20% / 0.1), 0 4px 6px -2px hsl(280 30% 20% / 0.05);
     --shadow-purple: 0 4px 14px 0 hsl(280 80% 45% / 0.25);
+
+    /* App Icon */
+    --app-icon: url('/photo_2025-12-20_09-18-28.jpg');
   }
 
   .dark {
@@ -169,5 +172,12 @@
     50% {
       opacity: 0.5;
     }
+  }
+
+  .app-icon {
+    background-image: var(--app-icon);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
