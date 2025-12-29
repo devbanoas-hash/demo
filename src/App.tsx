@@ -4,10 +4,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import AnalyticalDashboard from "./pages/AnalyticalDashboard";
+import CEODashboard from "./pages/CEODashboard";
 import TacticalDashboard from "./pages/TacticalDashboard";
-import OperationalDashboard from "./pages/OperationalDashboard";
-import ExecutiveDashboard from "./pages/ExecutiveDashboard";
+import ClinicDashboard from "./pages/ClinicDashboard";
+import CustomerHub from "./pages/CustomerHub";
+import DoctorHub from "./pages/DoctorHub";
+import MaterialHub from "./pages/MaterialHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,11 +22,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/analytical" element={<AnalyticalDashboard />} />
-          <Route path="/tactical" element={<TacticalDashboard />} />
-          <Route path="/operational" element={<OperationalDashboard />} />
-          <Route path="/executive" element={<ExecutiveDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/ceo" element={<CEODashboard />} />
+          <Route path="/phong-ban" element={<TacticalDashboard />} />
+          <Route path="/phong-kham" element={<ClinicDashboard />} />
+          <Route path="/customer-hub" element={<CustomerHub />} />
+          <Route path="/doctor-hub" element={<DoctorHub />} />
+          <Route path="/material-hub" element={<MaterialHub />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

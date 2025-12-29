@@ -33,12 +33,14 @@ const channelData = [
   { week: "T4", facebook: 58, google: 45, zalo: 38, tiktok: 32 },
 ];
 
-const costData = [
+const costDataRaw = [
   { channel: "Facebook", ads: 25, content: 8, tools: 5 },
   { channel: "Google", ads: 32, content: 5, tools: 8 },
   { channel: "Zalo", ads: 15, content: 10, tools: 3 },
   { channel: "TikTok", ads: 18, content: 12, tools: 4 },
 ];
+// Sort by total cost descending
+const costData = [...costDataRaw].sort((a, b) => (b.ads + b.content + b.tools) - (a.ads + a.content + a.tools));
 
 const conversionData = [
   { stage: "Lead", value: 1200, rate: 100 },

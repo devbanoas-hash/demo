@@ -16,7 +16,7 @@ import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { PatientChart } from "@/components/dashboard/PatientChart";
 import { ChannelROIChart } from "@/components/dashboard/ChannelROIChart";
 import { ConversionFunnel } from "@/components/dashboard/ConversionFunnel";
-import { RealtimeStatus } from "@/components/dashboard/RealtimeStatus";
+
 import { LabOrdersTable } from "@/components/dashboard/LabOrdersTable";
 import { InventoryAlerts } from "@/components/dashboard/InventoryAlerts";
 import { AppointmentTimeline } from "@/components/dashboard/AppointmentTimeline";
@@ -141,15 +141,12 @@ const Index = () => {
           </section>
 
           {/* Charts Row 2 */}
-          <section className="mb-8 grid gap-6 lg:grid-cols-3">
+          <section className="mb-8 grid gap-6 lg:grid-cols-2">
             <div className="rounded-lg border bg-card p-6 shadow-card animate-fade-in" style={{ animationDelay: "0.2s" }}>
               <ChannelROIChart />
             </div>
             <div className="rounded-lg border bg-card p-6 shadow-card animate-fade-in" style={{ animationDelay: "0.25s" }}>
               <ConversionFunnel />
-            </div>
-            <div className="rounded-lg border bg-card p-6 shadow-card animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              <RealtimeStatus />
             </div>
           </section>
 

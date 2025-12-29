@@ -6,12 +6,10 @@ import {
   Users,
   Settings,
   BarChart3,
-  Activity,
-  Calendar,
   Package,
-  Armchair,
   Stethoscope,
   Search,
+  Building2,
 } from "lucide-react";
 
 interface NavItem {
@@ -21,56 +19,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  {
-    label: "Tổng quan",
-    icon: <LayoutDashboard className="w-5 h-5" />,
-    href: "/",
-  },
-  {
-    label: "Phân tích",
-    icon: <TrendingUp className="w-5 h-5" />,
-    href: "/analytical",
-  },
-  {
-    label: "Chiến thuật",
-    icon: <BarChart3 className="w-5 h-5" />,
-    href: "/tactical",
-  },
-  {
-    label: "Vận hành",
-    icon: <Activity className="w-5 h-5" />,
-    href: "/operational",
-  },
-  {
-    label: "Điều hành",
-    icon: <Users className="w-5 h-5" />,
-    href: "/executive",
-  },
-  {
-    label: "Lịch hẹn",
-    icon: <Calendar className="w-5 h-5" />,
-    href: "/appointments",
-  },
-  {
-    label: "Bệnh nhân",
-    icon: <Users className="w-5 h-5" />,
-    href: "/patients",
-  },
-  {
-    label: "Vật tư",
-    icon: <Package className="w-5 h-5" />,
-    href: "/materials",
-  },
-  {
-    label: "Ghế điều trị",
-    icon: <Armchair className="w-5 h-5" />,
-    href: "/treatment-chairs",
-  },
-  {
-    label: "Bác sĩ",
-    icon: <Stethoscope className="w-5 h-5" />,
-    href: "/doctor-management",
-  },
+  { label: "Tổng quan", icon: <LayoutDashboard className="w-5 h-5" />, href: "/" },
+  { label: "CEO", icon: <TrendingUp className="w-5 h-5" />, href: "/ceo" },
+  { label: "Phòng Ban", icon: <BarChart3 className="w-5 h-5" />, href: "/phong-ban" },
+  { label: "Phòng Khám", icon: <Building2 className="w-5 h-5" />, href: "/phong-kham" },
+  { label: "Khách hàng", icon: <Users className="w-5 h-5" />, href: "/customer-hub" },
+  { label: "Bác sĩ", icon: <Stethoscope className="w-5 h-5" />, href: "/doctor-hub" },
+  { label: "Vật tư", icon: <Package className="w-5 h-5" />, href: "/material-hub" },
 ];
 
 interface DashboardSidebarProps {

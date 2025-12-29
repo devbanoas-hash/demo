@@ -9,7 +9,7 @@ import {
   Cell,
 } from "recharts";
 
-const data = [
+const rawData = [
   { service: "Niềng răng", revenue: 450, patients: 120 },
   { service: "Implant", revenue: 380, patients: 85 },
   { service: "Tẩy trắng", revenue: 220, patients: 200 },
@@ -17,6 +17,9 @@ const data = [
   { service: "Trám răng", revenue: 120, patients: 250 },
   { service: "Cạo vôi", revenue: 80, patients: 300 },
 ];
+
+// Sort from highest to lowest revenue
+const data = [...rawData].sort((a, b) => b.revenue - a.revenue);
 
 interface PatientChartProps {
   className?: string;
