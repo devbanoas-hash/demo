@@ -1,17 +1,19 @@
 import { create } from 'zustand';
-import { Order, Product, Shipper, User, OrderStatus } from '@/types';
-import { mockOrders, mockProducts, mockShippers, mockUsers } from '@/data/mockData';
+import { Order, Product, Shipper, User, Customer, OrderStatus } from '@/types';
+import { mockOrders, mockProducts, mockShippers, mockUsers, mockCustomers } from '@/data/mockData';
 
 interface OrderStore {
   orders: Order[];
   products: Product[];
   shippers: Shipper[];
   users: User[];
+  customers: Customer[];
   
   // Order actions
-  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => string;
   updateOrder: (id: string, updates: Partial<Order>) => void;
   updateOrderStatus: (id: string, status: OrderStatus) => void;
+  confirmOrder: (id: string, prepaidAmount: number) => void;
   assignShipper: (orderId: string, shipperId: string) => void;
   deleteOrder: (id: string) => void;
   
@@ -29,24 +31,35 @@ interface OrderStore {
   addUser: (user: Omit<User, 'id'>) => void;
   updateUser: (id: string, updates: Partial<User>) => void;
   deleteUser: (id: string) => void;
+
+  // Customer actions
+  findCustomerByPhone: (phone: string) => Customer | undefined;
+  addCustomer: (customer: Omit<Customer, 'id' | 'createdAt' | 'orderIds'>) => string;
+  updateCustomer: (id: string, updates: Partial<Customer>) => void;
+  addOrderToCustomer: (customerId: string, orderId: string) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const useOrderStore = create<OrderStore>((set) => ({
+export const useOrderStore = create<OrderStore>((set, get) => ({
   orders: mockOrders,
   products: mockProducts,
   shippers: mockShippers,
   users: mockUsers,
+  customers: mockCustomers,
 
-  addOrder: (order) => set((state) => ({
-    orders: [...state.orders, {
-      ...order,
-      id: `ORD${String(state.orders.length + 1).padStart(3, '0')}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }],
-  })),
+  addOrder: (order) => {
+    const newId = `ORD${String(get().orders.length + 1).padStart(3, '0')}`;
+    set((state) => ({
+      orders: [...state.orders, {
+        ...order,
+        id: newId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }],
+    }));
+    return newId;
+  },
 
   updateOrder: (id, updates) => set((state) => ({
     orders: state.orders.map((o) =>
@@ -58,6 +71,22 @@ export const useOrderStore = create<OrderStore>((set) => ({
     orders: state.orders.map((o) =>
       o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o
     ),
+  })),
+
+  confirmOrder: (id, prepaidAmount) => set((state) => ({
+    orders: state.orders.map((o) => {
+      if (o.id === id) {
+        const collection = o.totalAmount - prepaidAmount;
+        return { 
+          ...o, 
+          status: 'new' as OrderStatus, 
+          prepaid: prepaidAmount,
+          collection: Math.max(0, collection),
+          updatedAt: new Date().toISOString() 
+        };
+      }
+      return o;
+    }),
   })),
 
   assignShipper: (orderId, shipperId) => set((state) => ({
@@ -106,5 +135,32 @@ export const useOrderStore = create<OrderStore>((set) => ({
 
   deleteUser: (id) => set((state) => ({
     users: state.users.filter((u) => u.id !== id),
+  })),
+
+  findCustomerByPhone: (phone) => {
+    return get().customers.find((c) => c.phone === phone);
+  },
+
+  addCustomer: (customer) => {
+    const newId = `CUS${String(get().customers.length + 1).padStart(3, '0')}`;
+    set((state) => ({
+      customers: [...state.customers, {
+        ...customer,
+        id: newId,
+        orderIds: [],
+        createdAt: new Date().toISOString(),
+      }],
+    }));
+    return newId;
+  },
+
+  updateCustomer: (id, updates) => set((state) => ({
+    customers: state.customers.map((c) => (c.id === id ? { ...c, ...updates } : c)),
+  })),
+
+  addOrderToCustomer: (customerId, orderId) => set((state) => ({
+    customers: state.customers.map((c) =>
+      c.id === customerId ? { ...c, orderIds: [...c.orderIds, orderId] } : c
+    ),
   })),
 }));

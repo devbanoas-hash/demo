@@ -10,8 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Truck, CheckCircle2, Package, Banknote, RefreshCw } from 'lucide-react';
+import { Truck, CheckCircle2, Package, Banknote, RefreshCw, Store } from 'lucide-react';
 import { toast } from 'sonner';
+import { Order } from '@/types';
 
 export default function Delivery() {
   const { orders, shippers, assignShipper, updateOrderStatus } = useOrderStore();
@@ -29,14 +30,23 @@ export default function Delivery() {
     return orders.filter(o => o.deliveryDate === today);
   }, [orders, today, lastRefresh]);
 
-  const readyOrders = todayOrders.filter(o => o.status === 'ready');
-  const deliveringOrders = todayOrders.filter(o => o.status === 'delivering');
+  // Only show delivery orders (not pickup)
+  const deliveryOrders = todayOrders.filter(o => o.deliveryMethod === 'delivery');
+  const readyOrders = deliveryOrders.filter(o => o.status === 'ready');
+  const deliveringOrders = deliveryOrders.filter(o => o.status === 'delivering');
   const completedOrders = todayOrders.filter(o => o.status === 'completed');
 
   const totalCollected = completedOrders.reduce((sum, o) => sum + o.collection, 0);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+  };
+
+  const getAddressDisplay = (order: Order) => {
+    if (order.deliveryAddress) {
+      return `${order.deliveryAddress.street}, ${order.deliveryAddress.ward}, ${order.deliveryAddress.district}`;
+    }
+    return '';
   };
 
   const handleAssignShipper = (orderId: string, shipperId: string) => {
@@ -134,7 +144,7 @@ export default function Delivery() {
                   </div>
                   <p className="font-medium">{order.customerName}</p>
                   <p className="text-sm text-muted-foreground">{order.customerPhone}</p>
-                  <p className="text-sm text-muted-foreground truncate">{order.customerAddress}</p>
+                  <p className="text-sm text-muted-foreground truncate">{getAddressDisplay(order)}</p>
                   <div className="mt-2 flex justify-between items-center">
                     <span className="font-medium text-primary">{formatCurrency(order.collection)}</span>
                   </div>
@@ -177,7 +187,7 @@ export default function Delivery() {
                     <span className="text-sm">{order.deliveryTime}</span>
                   </div>
                   <p className="font-medium">{order.customerName}</p>
-                  <p className="text-sm text-muted-foreground">{order.customerAddress}</p>
+                  <p className="text-sm text-muted-foreground">{getAddressDisplay(order)}</p>
                   <div className="mt-2 flex justify-between items-center">
                     <div>
                       <p className="text-xs text-muted-foreground">Shipper</p>
@@ -215,11 +225,14 @@ export default function Delivery() {
                 <div key={order.id} className="p-3 border rounded-lg bg-muted/30">
                   <div className="flex justify-between mb-2">
                     <span className="font-medium">{order.id}</span>
-                    <StatusBadge status="completed" />
+                    <div className="flex items-center gap-2">
+                      {order.deliveryMethod === 'pickup' && <Store className="w-4 h-4 text-muted-foreground" />}
+                      <StatusBadge status="completed" />
+                    </div>
                   </div>
                   <p className="font-medium">{order.customerName}</p>
                   <div className="mt-2 flex justify-between items-center">
-                    <p className="text-sm">{getShipperName(order.shipperId)}</p>
+                    <p className="text-sm">{order.deliveryMethod === 'pickup' ? 'Nhận tại cửa hàng' : getShipperName(order.shipperId)}</p>
                     <span className="font-medium text-primary">{formatCurrency(order.collection)}</span>
                   </div>
                 </div>

@@ -3,7 +3,7 @@ import { useOrderStore } from '@/store/orderStore';
 import { StatusBadge } from '@/components/orders/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { OrderStatus } from '@/types';
+import { OrderStatus, Order } from '@/types';
 import { Clock, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -26,7 +26,8 @@ export default function TodayOrders() {
   }, [orders, today, lastRefresh]);
 
   const groupedOrders = useMemo(() => {
-    const groups: Record<OrderStatus, typeof todayOrders> = {
+    const groups: Record<OrderStatus, Order[]> = {
+      draft: [],
       new: [],
       ready: [],
       delivering: [],
@@ -51,12 +52,24 @@ export default function TodayOrders() {
     toast.success('Đã cập nhật trạng thái');
   };
 
+  const getAddressDisplay = (order: Order) => {
+    if (order.deliveryMethod === 'pickup') return 'Nhận tại cửa hàng';
+    if (order.deliveryAddress) {
+      return `${order.deliveryAddress.street}, ${order.deliveryAddress.ward}`;
+    }
+    return '';
+  };
+
   const statusConfig: Record<OrderStatus, { title: string; nextStatus?: OrderStatus; nextLabel?: string; bgClass: string }> = {
+    draft: { title: 'Đơn nháp', nextStatus: 'new', nextLabel: 'Xác nhận', bgClass: 'bg-muted/50 border-muted-foreground/30' },
     new: { title: 'Đơn mới', nextStatus: 'ready', nextLabel: 'Sẵn sàng', bgClass: 'bg-status-new/10 border-status-new/30' },
     ready: { title: 'Sẵn sàng giao', bgClass: 'bg-status-ready/10 border-status-ready/30' },
     delivering: { title: 'Đang giao', nextStatus: 'completed', nextLabel: 'Hoàn thành', bgClass: 'bg-status-delivering/10 border-status-delivering/30' },
     completed: { title: 'Đã hoàn thành', bgClass: 'bg-status-completed/10 border-status-completed/30' },
   };
+
+  // Show only active statuses for today view (not draft)
+  const activeStatuses: OrderStatus[] = ['new', 'ready', 'delivering', 'completed'];
 
   return (
     <div className="space-y-4">
@@ -73,7 +86,7 @@ export default function TodayOrders() {
 
       {/* Status Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {(Object.keys(statusConfig) as OrderStatus[]).map((status) => (
+        {activeStatuses.map((status) => (
           <Card key={status} className={`border ${statusConfig[status].bgClass}`}>
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center justify-between">
@@ -97,7 +110,7 @@ export default function TodayOrders() {
                       </div>
                     </div>
                     <p className="font-medium">{order.customerName}</p>
-                    <p className="text-sm text-muted-foreground truncate">{order.customerAddress}</p>
+                    <p className="text-sm text-muted-foreground truncate">{getAddressDisplay(order)}</p>
                     <div className="mt-2 text-sm">
                       {order.items.slice(0, 2).map((item, i) => (
                         <p key={i} className="truncate">{item.productName} x{item.quantity}</p>
