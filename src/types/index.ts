@@ -1,4 +1,4 @@
-export type OrderStatus = 'draft' | 'new' | 'ready' | 'handed_over' | 'delivering' | 'completed';
+export type OrderStatus = 'draft' | 'new' | 'pending' | 'ready' | 'handed_over' | 'delivering' | 'completed';
 export type UserRole = 'sales' | 'shipper' | 'admin' | 'kitchen_lead' | 'kitchen_staff';
 export type DeliveryMethod = 'pickup' | 'delivery';
 export type PaymentMethod = 'cash' | 'transfer';
@@ -42,6 +42,28 @@ export interface Customer {
   createdAt: string;
 }
 
+// Payment log entry
+export interface PaymentLog {
+  id: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  employeeId: string;
+  employeeName: string;
+  notes?: string;
+  createdAt: string;
+}
+
+// Edit log entry for tracking changes
+export interface EditLog {
+  id: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  employeeId: string;
+  employeeName: string;
+  createdAt: string;
+}
+
 export interface Order {
   id: string;
   customerId?: string;
@@ -60,6 +82,12 @@ export interface Order {
   status: OrderStatus;
   shipperId?: string;
   notes?: string;
+  // New fields
+  createdById?: string;
+  createdByName?: string;
+  paymentLogs: PaymentLog[];
+  editLogs: EditLog[];
+  photoNote?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -82,6 +110,7 @@ export interface User {
 export interface DashboardStats {
   draftOrders: number;
   newOrders: number;
+  pendingOrders: number;
   readyOrders: number;
   handedOverOrders: number;
   deliveringOrders: number;
@@ -101,4 +130,14 @@ export const roleLabels: Record<UserRole, string> = {
 export const categoryLabels: Record<ProductCategory, string> = {
   banh_au: 'Bánh Âu',
   banh_kem: 'Bánh Kem',
+};
+
+export const statusLabels: Record<OrderStatus, string> = {
+  draft: 'Nháp',
+  new: 'Mới',
+  pending: 'Chờ duyệt',
+  ready: 'Sẵn sàng',
+  handed_over: 'Đã bàn giao',
+  delivering: 'Đang giao',
+  completed: 'Hoàn thành',
 };

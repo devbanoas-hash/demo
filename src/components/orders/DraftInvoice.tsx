@@ -1,7 +1,10 @@
+import { useRef } from 'react';
 import { Order } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Printer, Send, Store, Truck } from 'lucide-react';
+import { Download, Send, Store, Truck } from 'lucide-react';
+import { toPng } from 'html-to-image';
+import { toast } from 'sonner';
 import logoVani from '@/assets/logo-vani.jpg';
 
 interface DraftInvoiceProps {
@@ -9,6 +12,8 @@ interface DraftInvoiceProps {
 }
 
 export function DraftInvoice({ order }: DraftInvoiceProps) {
+  const invoiceRef = useRef<HTMLDivElement>(null);
+  
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
   };
@@ -22,8 +27,26 @@ export function DraftInvoice({ order }: DraftInvoiceProps) {
     return '';
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPng = async () => {
+    if (!invoiceRef.current) return;
+    
+    try {
+      const dataUrl = await toPng(invoiceRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#fff',
+      });
+      
+      const link = document.createElement('a');
+      link.download = `hoa-don-bao-gia-${order.id}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      toast.success('Đã tải hoá đơn báo giá');
+    } catch (error) {
+      toast.error('Không thể tải hoá đơn');
+      console.error('Error downloading invoice:', error);
+    }
   };
 
   const handleSend = () => {
@@ -34,12 +57,12 @@ export function DraftInvoice({ order }: DraftInvoiceProps) {
   return (
     <div className="space-y-4">
       {/* Invoice Content */}
-      <div className="bg-cream-light rounded-lg p-6 space-y-4 print:p-0">
+      <div ref={invoiceRef} className="bg-cream-light rounded-lg p-6 space-y-4">
         {/* Header */}
         <div className="text-center space-y-2">
           <img src={logoVani} alt="Tiệm Bánh Vani" className="w-16 h-16 mx-auto rounded-full object-cover" />
           <h2 className="font-bold text-xl text-primary">TIỆM BÁNH VANI</h2>
-          <p className="text-sm text-muted-foreground">Hoá đơn nháp</p>
+          <p className="text-sm font-medium">Hoá đơn báo giá</p>
         </div>
 
         <Separator />
@@ -120,7 +143,7 @@ export function DraftInvoice({ order }: DraftInvoiceProps) {
             <span className="text-primary">{formatCurrency(order.totalAmount)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Đã cọc:</span>
+            <span className="text-muted-foreground">Đã thanh toán:</span>
             <span>{formatCurrency(order.prepaid)}</span>
           </div>
           <div className="flex justify-between font-bold text-lg">
@@ -133,8 +156,8 @@ export function DraftInvoice({ order }: DraftInvoiceProps) {
 
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground space-y-1">
-          <p>Đây là hoá đơn nháp, chưa phải hoá đơn chính thức</p>
-          <p>Xin vui lòng liên hệ cửa hàng để xác nhận đơn</p>
+          <p className="font-medium">Quý khách cần hoá đơn tài chính,</p>
+          <p>vui lòng liên hệ cửa hàng sau khi thanh toán.</p>
         </div>
       </div>
 
@@ -144,9 +167,9 @@ export function DraftInvoice({ order }: DraftInvoiceProps) {
           <Send className="w-4 h-4 mr-2" />
           Gửi khách
         </Button>
-        <Button className="flex-1" onClick={handlePrint}>
-          <Printer className="w-4 h-4 mr-2" />
-          In
+        <Button className="flex-1" onClick={handleDownloadPng}>
+          <Download className="w-4 h-4 mr-2" />
+          Tải PNG
         </Button>
       </div>
     </div>

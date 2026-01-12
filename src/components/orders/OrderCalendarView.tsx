@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Order, OrderStatus } from '@/types';
+import { Order, OrderStatus, statusLabels } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { StatusBadge } from './StatusBadge';
+import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -67,8 +67,9 @@ export function OrderCalendarView({ orders, onEditOrder }: OrderCalendarViewProp
   const statusColors: Record<OrderStatus, string> = {
     draft: 'bg-muted',
     new: 'bg-status-new',
+    pending: 'bg-amber-500',
     ready: 'bg-status-ready',
-    handed_over: 'bg-amber-500',
+    handed_over: 'bg-purple-500',
     delivering: 'bg-status-delivering',
     completed: 'bg-status-completed',
   };
@@ -152,10 +153,10 @@ export function OrderCalendarView({ orders, onEditOrder }: OrderCalendarViewProp
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t justify-center">
-          {(['draft', 'new', 'ready', 'handed_over', 'delivering', 'completed'] as OrderStatus[]).map((status) => (
+          {(['draft', 'new', 'pending', 'ready', 'handed_over', 'delivering', 'completed'] as OrderStatus[]).map((status) => (
             <div key={status} className="flex items-center gap-2">
               <div className={cn('w-3 h-3 rounded', statusColors[status])} />
-              <StatusBadge status={status} className="text-xs" />
+              <Badge variant="outline" className="text-xs">{statusLabels[status]}</Badge>
             </div>
           ))}
         </div>

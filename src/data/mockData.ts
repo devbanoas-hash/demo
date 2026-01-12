@@ -103,6 +103,12 @@ export const mockOrders: Order[] = [
     collection: 540000,
     paymentMethod: 'cash',
     status: 'new',
+    createdById: '2',
+    createdByName: 'Ngọc Anh',
+    paymentLogs: [
+      { id: 'pay1', amount: 200000, paymentMethod: 'transfer', employeeId: '2', employeeName: 'Ngọc Anh', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -124,6 +130,12 @@ export const mockOrders: Order[] = [
     collection: 0,
     paymentMethod: 'transfer',
     status: 'ready',
+    createdById: '2',
+    createdByName: 'Ngọc Anh',
+    paymentLogs: [
+      { id: 'pay2', amount: 800000, paymentMethod: 'transfer', employeeId: '2', employeeName: 'Ngọc Anh', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -148,6 +160,12 @@ export const mockOrders: Order[] = [
     paymentMethod: 'cash',
     status: 'new',
     notes: 'Giao hàng trước 4h chiều, gọi điện trước 30 phút',
+    createdById: '3',
+    createdByName: 'Minh Thư',
+    paymentLogs: [
+      { id: 'pay3', amount: 400000, paymentMethod: 'cash', employeeId: '3', employeeName: 'Minh Thư', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -168,6 +186,12 @@ export const mockOrders: Order[] = [
     collection: 0,
     paymentMethod: 'transfer',
     status: 'handed_over',
+    createdById: '2',
+    createdByName: 'Ngọc Anh',
+    paymentLogs: [
+      { id: 'pay4', amount: 760000, paymentMethod: 'transfer', employeeId: '2', employeeName: 'Ngọc Anh', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -191,6 +215,12 @@ export const mockOrders: Order[] = [
     paymentMethod: 'cash',
     status: 'delivering',
     shipperId: '1',
+    createdById: '2',
+    createdByName: 'Ngọc Anh',
+    paymentLogs: [
+      { id: 'pay5', amount: 400000, paymentMethod: 'cash', employeeId: '2', employeeName: 'Ngọc Anh', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -211,6 +241,10 @@ export const mockOrders: Order[] = [
     collection: 425000,
     paymentMethod: 'cash',
     status: 'draft',
+    createdById: '3',
+    createdByName: 'Minh Thư',
+    paymentLogs: [],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -232,6 +266,12 @@ export const mockOrders: Order[] = [
     collection: 510000,
     paymentMethod: 'cash',
     status: 'new',
+    createdById: '2',
+    createdByName: 'Ngọc Anh',
+    paymentLogs: [
+      { id: 'pay6', amount: 500000, paymentMethod: 'cash', employeeId: '2', employeeName: 'Ngọc Anh', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -252,6 +292,13 @@ export const mockOrders: Order[] = [
     paymentMethod: 'transfer',
     status: 'new',
     notes: 'Khách VIP, cần làm đẹp',
+    photoNote: 'Khách yêu cầu chụp hình bánh trước khi giao',
+    createdById: '3',
+    createdByName: 'Minh Thư',
+    paymentLogs: [
+      { id: 'pay7', amount: 600000, paymentMethod: 'transfer', employeeId: '3', employeeName: 'Minh Thư', createdAt: new Date().toISOString() }
+    ],
+    editLogs: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

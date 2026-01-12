@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Order, Product, Shipper, User, Customer, OrderStatus } from '@/types';
+import { Order, Product, Shipper, User, Customer, OrderStatus, PaymentLog, EditLog, PaymentMethod } from '@/types';
 import { mockOrders, mockProducts, mockShippers, mockUsers, mockCustomers } from '@/data/mockData';
 
 interface OrderStore {
@@ -10,12 +10,15 @@ interface OrderStore {
   customers: Customer[];
   
   // Order actions
-  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => string;
-  updateOrder: (id: string, updates: Partial<Order>) => void;
+  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'paymentLogs' | 'editLogs'>) => string;
+  updateOrder: (id: string, updates: Partial<Order>, employeeId?: string, employeeName?: string) => void;
   updateOrderStatus: (id: string, status: OrderStatus) => void;
   confirmOrder: (id: string, prepaidAmount: number) => void;
   assignShipper: (orderId: string, shipperId: string) => void;
   deleteOrder: (id: string) => void;
+  
+  // Payment log actions
+  addPaymentLog: (orderId: string, log: Omit<PaymentLog, 'id' | 'createdAt'>) => void;
   
   // Product actions
   addProduct: (product: Omit<Product, 'id'>) => void;
@@ -54,6 +57,8 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       orders: [...state.orders, {
         ...order,
         id: newId,
+        paymentLogs: [],
+        editLogs: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }],
@@ -61,10 +66,40 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     return newId;
   },
 
-  updateOrder: (id, updates) => set((state) => ({
-    orders: state.orders.map((o) =>
-      o.id === id ? { ...o, ...updates, updatedAt: new Date().toISOString() } : o
-    ),
+  updateOrder: (id, updates, employeeId, employeeName) => set((state) => ({
+    orders: state.orders.map((o) => {
+      if (o.id === id) {
+        const editLogs = [...o.editLogs];
+        
+        // Track changes if employee info provided
+        if (employeeId && employeeName) {
+          const trackableFields = ['customerName', 'customerPhone', 'deliveryDate', 'deliveryTime', 'totalAmount', 'deliveryMethod'];
+          
+          trackableFields.forEach(field => {
+            if (updates[field as keyof Order] !== undefined && updates[field as keyof Order] !== o[field as keyof Order]) {
+              editLogs.push({
+                id: generateId(),
+                field,
+                oldValue: String(o[field as keyof Order] || ''),
+                newValue: String(updates[field as keyof Order]),
+                employeeId,
+                employeeName,
+                createdAt: new Date().toISOString(),
+              });
+            }
+          });
+
+          // Check if total amount changed (for pending approval)
+          if (updates.totalAmount !== undefined && updates.totalAmount !== o.totalAmount) {
+            // Mark as pending for manager approval
+            updates.status = 'pending';
+          }
+        }
+
+        return { ...o, ...updates, editLogs, updatedAt: new Date().toISOString() };
+      }
+      return o;
+    }),
   })),
 
   updateOrderStatus: (id, status) => set((state) => ({
@@ -99,6 +134,29 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
   deleteOrder: (id) => set((state) => ({
     orders: state.orders.filter((o) => o.id !== id),
+  })),
+
+  addPaymentLog: (orderId, log) => set((state) => ({
+    orders: state.orders.map((o) => {
+      if (o.id === orderId) {
+        const newLog: PaymentLog = {
+          ...log,
+          id: generateId(),
+          createdAt: new Date().toISOString(),
+        };
+        const newPrepaid = o.prepaid + log.amount;
+        const newCollection = Math.max(0, o.totalAmount - newPrepaid);
+        
+        return {
+          ...o,
+          prepaid: newPrepaid,
+          collection: newCollection,
+          paymentLogs: [...o.paymentLogs, newLog],
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return o;
+    }),
   })),
 
   addProduct: (product) => set((state) => ({
