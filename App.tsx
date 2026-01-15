@@ -17,7 +17,7 @@ const App: React.FC = () => {
         <div className="p-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-red-100 overflow-hidden">
-               <img src={LOGO_URL} alt="Vani Logo" className="w-full h-full object-cover p-1" />
+               <img src={LOGO_URL} alt="Vani Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="font-bold text-lg leading-tight">Tiệm Bánh Vani</h1>
