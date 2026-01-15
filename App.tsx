@@ -5,7 +5,7 @@ import ProductionPage from './pages/ProductionPage';
 import OrderManagementPage from './pages/OrderManagementPage';
 import { Package, LayoutDashboard, Truck, Users, ChefHat, UserCircle, UserCog, Box, Contact } from 'lucide-react';
 
-const LOGO_URL = "https://cdn-icons-png.flaticon.com/512/4279/4279862.png"; // Vani Logo
+const LOGO_URL = "logo-vani.jpg"; // Vani Logo
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<'overview' | 'orders' | 'production' | 'delivery' | 'shipper' | 'customers' | 'products' | 'users'>('orders');
