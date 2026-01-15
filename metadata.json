@@ -1,0 +1,7 @@
+{
+  "name": "Tiệm Bánh Vani - Quản Lý Giao Hàng",
+  "description": "Hệ thống quản lý giao hàng chuyên nghiệp cho tiệm bánh, hỗ trợ phân chia shipper, theo dõi trạng thái, và đồng bộ Zalo.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
