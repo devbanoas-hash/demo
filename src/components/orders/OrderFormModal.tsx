@@ -867,6 +867,7 @@ const OrderFormModal = ({ onClose, initialOrder, onSave, loading }: OrderFormMod
                                             >
                                                 <option value="created">{orderStatusLabels.created}</option>
                                                 <option value="in_production">{orderStatusLabels.in_production}</option>
+                                                <option value="ready">{orderStatusLabels.ready}</option>
                                             </select>
                                         </div>
                                     )}
