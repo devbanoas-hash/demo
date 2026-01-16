@@ -35,6 +35,20 @@ export default function Delivery() {
 
   const selectedDateStr = viewDate.toISOString().split('T')[0];
 
+  // Filter orders based on Tab, Date, and Search
+  const currentOrders = useMemo(() => {
+    return orders.filter(o => {
+      const matchTab = activeTab === 'delivery' ? o.fulfillment_method === 'home_delivery' : o.fulfillment_method === 'store_pickup';
+      const { day } = splitDeliveryDateTime(o.delivery_at);
+      const matchDate = day === selectedDateStr;
+      const matchSearch = !searchTerm || 
+        o.customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        o.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.customer.customer_phone_number.includes(searchTerm);
+      return matchTab && matchDate && matchSearch;
+    });
+  }, [orders, activeTab, searchTerm, selectedDateStr]);
+
   // --- Logic for Shipper Config ---
   // Initial load: show all shippers
   useEffect(() => {
@@ -42,12 +56,28 @@ export default function Delivery() {
   }, [shippers]);
 
   // Determine which shippers have active orders (Locked)
-  // Note: IOrder doesn't have shipperId/isExternalShip, so this is simplified
   const lockedShipperIds = useMemo(() => {
     const ids = new Set<string>();
-    // TODO: Add shipper assignment logic when IOrder is extended
+    
+    // Check currentOrders (already filtered by tab, date, search) for assigned shippers
+    currentOrders.forEach(order => {
+      if (order.shipper) {
+        // Check if it's an internal shipper
+        if (order.shipper.shipper_phone_number) {
+          const assignedShipper = shippers.find(s => s.shipper_phone_number === order.shipper.shipper_phone_number);
+          if (assignedShipper) {
+            ids.add(assignedShipper.app_id);
+          }
+        }
+        // Check if it's external shipper
+        if (order.shipper.app_id === 'external_ship') {
+          ids.add('external');
+        }
+      }
+    });
+    
     return ids;
-  }, [orders]);
+  }, [currentOrders, shippers]);
 
   // Ensure locked shippers are always visible
   useEffect(() => {
@@ -88,20 +118,6 @@ export default function Delivery() {
   };
 
   const hourSlots = Array.from({ length: 15 }, (_, i) => `${(i + 7).toString().padStart(2, '0')}:00`);
-
-  // Filter orders based on Tab, Date, and Search
-  const currentOrders = useMemo(() => {
-    return orders.filter(o => {
-      const matchTab = activeTab === 'delivery' ? o.fulfillment_method === 'home_delivery' : o.fulfillment_method === 'store_pickup';
-      const { day } = splitDeliveryDateTime(o.delivery_at);
-      const matchDate = day === selectedDateStr;
-      const matchSearch = !searchTerm || 
-        o.customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        o.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.customer.customer_phone_number.includes(searchTerm);
-      return matchTab && matchDate && matchSearch;
-    });
-  }, [orders, activeTab, searchTerm, selectedDateStr]);
 
   // Stats derived from CURRENT TAB orders (already filtered by date in currentOrders)
   const stats = useMemo(() => {

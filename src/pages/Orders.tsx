@@ -123,23 +123,22 @@ export default function Orders() {
   };
 
   const handleSaveOrder = async (order: IOrder) => {
-    console.log(order);
-    // if (selectedOrder && isEditModalOpen) {
-    //   // Update existing order
-    //   const result = await update(order.order_id, order);
-    //   if (result.success) {
-    //     setIsEditModalOpen(false);
-    //     setSelectedOrder(null);
-    //   }
-    // }
-    // else {
-    //   // Create new order
-    //   const result = await create(order);
-    //   if (result.success) {
-    //     setIsEditModalOpen(false);
-    //     setSelectedOrder(null);
-    //   }
-    // }
+    if (selectedOrder && isEditModalOpen) {
+      // Update existing order
+      const result = await update(order.order_id, order);
+      if (result.success) {
+        setIsEditModalOpen(false);
+        setSelectedOrder(null);
+      }
+    }
+    else {
+      // Create new order
+      const result = await create(order);
+      if (result.success) {
+        setIsEditModalOpen(false);
+        setSelectedOrder(null);
+      }
+    }
   };
 
   const handlePaymentSuccess = (updatedOrder: IOrder) => {
