@@ -117,7 +117,7 @@ export default function Delivery() {
     await updateOrder(orderId, { status: newStatus, ...extra });
   };
 
-  const hourSlots = Array.from({ length: 15 }, (_, i) => `${(i + 7).toString().padStart(2, '0')}:00`);
+  const hourSlots = Array.from({ length: 17 }, (_, i) => `${(i + 7).toString().padStart(2, '0')}:00`);
 
   // Stats derived from CURRENT TAB orders (already filtered by date in currentOrders)
   const stats = useMemo(() => {

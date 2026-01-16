@@ -151,15 +151,15 @@ const InvoiceModal = ({ onClose, order, invoiceRef, onPrint }: InvoiceModalProps
                 </div>
 
                 <div className="px-6 py-4 border-t border-slate-100 flex justify-between gap-3 no-print">
-                     <button className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2">
+                     {/* <button className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2">
                          <Share2 size={18}/> Gửi khách
-                     </button>
+                     </button> */}
                      <button className="flex-1 py-3 rounded-xl bg-[#B1454A] text-white font-bold hover:bg-[#8e373b] flex items-center justify-center gap-2">
                          <Download size={18}/> Tải PNG
                      </button>
-                     <button onClick={onPrint} className="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 flex items-center justify-center gap-2">
+                     {/* <button onClick={onPrint} className="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 flex items-center justify-center gap-2">
                          <Printer size={18}/> In hóa đơn
-                     </button>
+                     </button> */}
                 </div>
             </div>
         </div>
