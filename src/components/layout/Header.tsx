@@ -1,8 +1,17 @@
 import { useLocation } from 'react-router-dom';
-import { UserCircle, Clock, Zap, Package, Truck, Users, Contact, LayoutGrid, LucideIcon } from 'lucide-react';
+import { UserCircle, Clock, Zap, Package, Truck, Users, Contact, LayoutGrid, LucideIcon, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { roleLabels } from '@/constants/role.constant';
 import { useHeader } from '@/contexts/HeaderContext';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface PageConfig {
   title: string;
@@ -56,6 +65,7 @@ const pageConfigs: Record<string, PageConfig> = {
 export function Header() {
   const location = useLocation();
   const { user } = useAuthStore();
+  const { logout } = useAuth();
   const userRole = user?.role_name || '';
   const { subtitle } = useHeader();
 
@@ -102,9 +112,36 @@ export function Header() {
             }
           </p>
         </div>
-        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 border border-slate-300">
-          <UserCircle size={20} />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 border border-slate-300 hover:bg-slate-300 transition-colors cursor-pointer">
+              <UserCircle size={20} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  {user?.username || user?.email || 'Hệ thống Admin'}
+                </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {userRole 
+                    ? (roleLabels[userRole as keyof typeof roleLabels] || userRole)
+                    : 'Người dùng'
+                  }
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={logout}
+              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Đăng xuất</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Truck, Store, Share2, Download, Printer } from "lucide-react";
 import { IOrder } from "@/types/order";
 import { splitDeliveryDateTime } from "@/lib/utils";
+import { toPng } from "html-to-image";
+import { toast } from "sonner";
 
 interface InvoiceModalProps {
     onClose: () => void;
@@ -12,6 +14,8 @@ interface InvoiceModalProps {
 
 
 const InvoiceModal = ({ onClose, order, invoiceRef, onPrint }: InvoiceModalProps) => {
+    const [isDownloading, setIsDownloading] = useState(false);
+    
     // Recalculate totals for invoice
     const itemsTotal = order.cake_orders.reduce((s, i) => s + (i.unit_price * i.quantity), 0) || 0;
     const shipping = order.shipping_fee || 0;
@@ -23,6 +27,35 @@ const InvoiceModal = ({ onClose, order, invoiceRef, onPrint }: InvoiceModalProps
     // Determine Staff and Date
     const staffName = order.created_by.username || 'Admin'; // Default if not found
     const createdDate = new Date(order.created_at || '').toLocaleString('vi-VN');
+
+    const handleDownloadPNG = async () => {
+        if (!invoiceRef.current) {
+            toast.error('Không thể tải ảnh');
+            return;
+        }
+
+        setIsDownloading(true);
+        try {
+            const dataUrl = await toPng(invoiceRef.current, {
+                quality: 1.0,
+                pixelRatio: 2,
+                backgroundColor: '#ffffff',
+            });
+
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `Hoa-don-${order.order_id}-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = dataUrl;
+            link.click();
+
+            toast.success('Đã tải ảnh thành công');
+        } catch (error) {
+            console.error('Error downloading PNG:', error);
+            toast.error('Có lỗi xảy ra khi tải ảnh');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
@@ -154,8 +187,12 @@ const InvoiceModal = ({ onClose, order, invoiceRef, onPrint }: InvoiceModalProps
                      {/* <button className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2">
                          <Share2 size={18}/> Gửi khách
                      </button> */}
-                     <button className="flex-1 py-3 rounded-xl bg-[#B1454A] text-white font-bold hover:bg-[#8e373b] flex items-center justify-center gap-2">
-                         <Download size={18}/> Tải PNG
+                     <button 
+                         onClick={handleDownloadPNG}
+                         disabled={isDownloading}
+                         className="flex-1 py-3 rounded-xl bg-[#B1454A] text-white font-bold hover:bg-[#8e373b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                     >
+                         <Download size={18}/> {isDownloading ? 'Đang tải...' : 'Tải PNG'}
                      </button>
                      {/* <button onClick={onPrint} className="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 flex items-center justify-center gap-2">
                          <Printer size={18}/> In hóa đơn

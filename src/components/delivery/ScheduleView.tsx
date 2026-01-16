@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { IOrder } from '@/types/order';
 import { IShipper } from '@/types/shipper';
 import { splitDeliveryDateTime } from '@/lib/utils';
@@ -15,17 +16,36 @@ interface ScheduleViewProps {
 }
 const ScheduleView = ({ orders, shippers, hourSlots, onUpdate, onIssue, onProcess, visibleShipperIds }: ScheduleViewProps) => {
     // Construct Columns
-  const baseColumns = [
+  const baseColumns = useMemo(() => [
     { id: 'time', label: 'Thời gian', width: 'w-24' },
     { id: 'unassigned', label: 'Đơn cần giao', width: 'flex-1 min-w-[300px]' },
-  ];
+  ], []);
   
-  const shipperColumns = [
-    ...shippers.map(s => ({ id: s.app_id, label: `Shipper ${s.shipper_name}`, width: 'w-1/6 min-w-[200px]' })),
-    { id: 'external', label: 'Ship Ngoài', width: 'w-1/6 min-w-[200px]' }
-  ].filter(c => visibleShipperIds.includes(c.id));
+  const shipperColumns = useMemo(() => {
+    // Only create columns for shippers that are in visibleShipperIds
+    const columns: Array<{ id: string; name: string; label: string; width: string }> = [];
+    
+    // Add external column if visible
+    if (visibleShipperIds.includes('external')) {
+      columns.push({ id: 'external', name: 'Ship Ngoài', label: 'Ship Ngoài', width: 'w-1/6 min-w-[200px]' });
+    }
+    
+    // Add internal shipper columns if visible (match by shipper_name)
+    shippers.forEach(s => {
+      if (visibleShipperIds.includes(s.shipper_name)) {
+        columns.push({ 
+          id: s.app_id, 
+          name: s.shipper_name, 
+          label: `Shipper ${s.shipper_name}`, 
+          width: 'w-1/6 min-w-[200px]' 
+        });
+      }
+    });
+    
+    return columns;
+  }, [shippers, visibleShipperIds]);
 
-  const columns = [...baseColumns, ...shipperColumns];
+  const columns = useMemo(() => [...baseColumns, ...shipperColumns], [baseColumns, shipperColumns]);
 
   const getOrdersByCol = (hour: string, colId: string) => {
     return orders.filter(o => {

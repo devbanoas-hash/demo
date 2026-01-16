@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   Truck, Clock, Store, CheckCircle, Search, Zap, Calendar, DollarSign, LayoutList, CalendarDays,
   Package, RefreshCw, Settings, Check, Lock, ChevronLeft, ChevronRight
@@ -50,12 +50,13 @@ export default function Delivery() {
   }, [orders, activeTab, searchTerm, selectedDateStr]);
 
   // --- Logic for Shipper Config ---
+  // Use shipper_name instead of app_id for identification
   // Initial load: show all shippers
   useEffect(() => {
-    setVisibleShipperIds([...shippers.map(s => s.app_id), 'external']);
+    setVisibleShipperIds([...shippers.map(s => s.shipper_name), 'external']);
   }, [shippers]);
 
-  // Determine which shippers have active orders (Locked)
+  // Determine which shippers have active orders (Locked) - using shipper_name
   const lockedShipperIds = useMemo(() => {
     const ids = new Set<string>();
     
@@ -66,7 +67,7 @@ export default function Delivery() {
         if (order.shipper.shipper_phone_number) {
           const assignedShipper = shippers.find(s => s.shipper_phone_number === order.shipper.shipper_phone_number);
           if (assignedShipper) {
-            ids.add(assignedShipper.app_id);
+            ids.add(assignedShipper.shipper_name);
           }
         }
         // Check if it's external shipper
@@ -82,15 +83,19 @@ export default function Delivery() {
   // Ensure locked shippers are always visible
   useEffect(() => {
     setVisibleShipperIds(prev => {
-      const next = new Set(prev);
+      const prevSet = new Set(prev);
       let changed = false;
-      lockedShipperIds.forEach(id => {
-        if (!next.has(id)) {
-            next.add(id);
-            changed = true;
+      lockedShipperIds.forEach(name => {
+        if (!prevSet.has(name)) {
+          prevSet.add(name);
+          changed = true;
         }
       });
-      return changed ? Array.from(next) : prev;
+      // Only update if there are changes, and create a new array reference
+      if (changed) {
+        return Array.from(prevSet);
+      }
+      return prev; // Return same reference if no changes
     });
   }, [lockedShipperIds]);
 
@@ -100,15 +105,34 @@ export default function Delivery() {
     return () => setSubtitle(null);
   }, [activeTab, setSubtitle]);
 
-  const toggleShipper = (id: string) => {
-    if (lockedShipperIds.has(id)) return; // Prevent toggling if locked
-    setVisibleShipperIds(prev => 
-        prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  };
+  const toggleShipper = useCallback((id: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    
+    if (lockedShipperIds.has(id)) {
+      return; // Prevent toggling if locked
+    }
+    
+    setVisibleShipperIds(prev => {
+      const currentSet = new Set(prev);
+      
+      if (currentSet.has(id)) {
+        // Remove shipper from visible list
+        currentSet.delete(id);
+      } else {
+        // Add shipper to visible list
+        currentSet.add(id);
+      }
+      
+      // Convert back to array - this ensures a new array reference
+      return Array.from(currentSet);
+    });
+  }, [lockedShipperIds]);
 
   const allShipperOptions = [
-    ...shippers.map(s => ({ id: s.app_id, name: s.shipper_name })),
+    ...shippers.map(s => ({ id: s.shipper_name, name: s.shipper_name })),
     { id: 'external', name: 'Ship Ngoài' }
   ];
   // -------------------------------
@@ -261,7 +285,12 @@ export default function Delivery() {
                   {isConfigOpen && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setIsConfigOpen(false)} />
-                      <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-3 w-56 z-50 animate-in fade-in zoom-in duration-200">
+                      <div 
+                        className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 p-3 w-56 z-50 animate-in fade-in zoom-in duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-2">Hiển thị Shipper</h4>
                         <div className="space-y-1">
                           {allShipperOptions.map(s => {
@@ -270,10 +299,18 @@ export default function Delivery() {
                               return (
                                 <button 
                                   key={s.id}
-                                  onClick={() => toggleShipper(s.id)}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    if (!isLocked) {
+                                      toggleShipper(s.id, e);
+                                    }
+                                  }}
+                                  disabled={isLocked}
                                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${
                                     isVisible ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'
-                                  } ${isLocked ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                  } ${isLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                                 >
                                   <div className="flex items-center gap-2">
                                     <div className={`w-4 h-4 rounded border flex items-center justify-center ${isVisible ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 bg-white'}`}>
